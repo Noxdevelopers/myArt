@@ -1,3 +1,3 @@
 <?php
 
-print '1111111111111111111';
+echo "Hello Word !";
