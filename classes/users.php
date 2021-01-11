@@ -50,7 +50,7 @@ class users
         $error = new MyError();
         if ($email == -1 || $phone == -1 || !filter_var($email, FILTER_VALIDATE_EMAIL)){
 
-            $error->display("Invalid Data", "", MyError::$ERROR_INVALID_DATA);
+            $error->display("Invalid Data", MyError::$ERROR_INVALID_DATA);
 
         }
 
