@@ -14,6 +14,9 @@ $ID      = app::get(USER_ID);
 switch ($ROUTE) {
     case ROUTE_USERS:{
         $users = new users();
+        if($users->checkLogin($ID)) {
+            $users = new users();
+        }
         break ;
     }
     case ROUTE_PRODUCTS:{

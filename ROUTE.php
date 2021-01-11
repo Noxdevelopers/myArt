@@ -8,16 +8,17 @@ define("USER_ID"         , "ID");
 define("ROUTE_USERS"     , "USERS");
 define("ACTION_LOGIN"    , "LOGIN");
 define("ACTION_REGISTER" , "REGISTER");
-define("INPUT_EMAIL"     , "EMAIL");//h
-define("INPUT_PHONE"     , "PHONE");//h
-define("INPUT_FULLNAME"  , "FULLNAME");//h
+define("ACTION_CHECKLOGIN", "CHECKLOGIN");//h
+define("INPUT_EMAIL"     , "EMAIL");
+define("INPUT_PHONE"     , "PHONE");
+define("INPUT_FULLNAME"  , "FULLNAME");
 //Products
 define("ROUTE_PRODUCTS"  , "PRODUCTS");
 define("ACTION_ADD"      , "ADD");
 define("ACTION_READ"     , "READ");
 define("ACTION_EDIT"     , "EDIT");
 define("ACTION_DELETE"   , "DELETE");
-define("INPUT_TITLE"     , "TITLE");//h
+define("INPUT_TITLE"     , "TITLE");
 define("INPUT_DETAIL"    , "DETAIL");//A
 define("INPUT_PRICE"     , "PRICE");//A
 define("INPUT_SORT"      , "SORT");//A
