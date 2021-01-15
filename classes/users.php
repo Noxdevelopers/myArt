@@ -120,7 +120,7 @@ class users
             echo json_encode($response);
         } catch (PDOException $exc) {
             if ($exc->getCode() == 23000) {
-                $error->display("این ایمیل قبلا ایجاد شده است", MyError::$ERROR_DUPLICATE_EMAIL);
+                $error->display("ایمیل یا شماره قبلا ایجاد شده است", MyError::$ERROR_DUPLICATE_EMAIL);
             }
             $error->display("System Error 1", MyError::$ERROR_MYPDO_SQL);
         }
