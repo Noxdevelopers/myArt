@@ -14,10 +14,10 @@ class users
             case ACTION_LOGIN:
             {
 
-                $email = app::get(INPUT_EMAIL);
+                //$email = app::get(INPUT_EMAIL);
                 $phone = app::get(INPUT_PHONE);
 
-                $this->login($email, $phone);
+                $this->login($phone);
 
                 break;
 
@@ -38,15 +38,15 @@ class users
         }
     }
 
-    public function login($email, $phone)
+    public function login($phone)
     {
 
         $conn = MyPDO::getInstance();
         $query = "SELECT 
-                     id , email , phone , fullname FROM users WHERE email = :email AND phone = :phone";
+                     id , email , phone , fullname FROM users WHERE phone = :phone";
 
         $stmt = $conn->prepare($query);
-        $stmt->bindParam(":email", $email);
+        //$stmt->bindParam(":email", $email);
         $stmt->bindParam(":phone", $phone);
 
         try {
@@ -55,13 +55,19 @@ class users
             while ($res = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
                 $response = array();
+                $session = md5(sha1(microtime()));
+                $query = "UPDATE users SET session = '$session' WHERE id = " . $res['id'];
+                $stmt1 = $conn->prepare($query);
+                $stmt1->execute();
+
                 $response['state'] = SUCCESS;
 
                 $user = array(
                     USER_ID => $res['id'],
                     INPUT_EMAIL => $res['email'],
                     INPUT_PHONE => $res['phone'],
-                    INPUT_FULLNAME => $res['fullname']
+                    INPUT_FULLNAME => $res['fullname'],
+                    SESSION => $session
                 );
                 $response['UserObject'] = $user;
 
@@ -73,7 +79,7 @@ class users
         } catch (PDOException $exc) {
             echo $exc->getMessage();
             $error = new MyError();
-            $error->display("Server Error ", MyError::$ERROR_MYPDO_SQL);
+            $error->display("Server Error", MyError::$ERROR_MYPDO_SQL);
         }
 
     }
@@ -82,46 +88,54 @@ class users
     {
 
         $error = new MyError();
-        if ($email == -1 || $phone == -1 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if ($email == -1 || $phone == -1 || !filter_var($email, FILTER_VALIDATE_EMAIL) ) {
 
             $error->display("Invalid Data", MyError::$ERROR_INVALID_DATA);
 
         }
 
+        $session = sha1(microtime() . md5(microtime()));
+
         $conn = MyPDO::getInstance();
 
-        $query = " INSERT INTO users (email , phone , fullname) "
-            . " VALUES (:email , :phone , :fullname)";
+        $query = " INSERT INTO users (email , phone , fullname , session) "
+            . " VALUES (:email , :phone , :fullname , :session)";
         $stmt = $conn->prepare($query);
         $stmt->bindParam(":email", $email);
         $stmt->bindParam(":phone", $phone);
         $stmt->bindParam(":fullname", $fullname);
+        $stmt->bindParam(":session", $session);
 
         try {
             $stmt->execute();
             $id = MyPDO::getLastID($conn);
             $response = array();
-            $response['id'] = $id;
             $response['state'] = SUCCESS;
+            $response['id'] = $id;
+            $response['email'] = $email;
+            $response['phone'] = $phone;
+            $response['fullname'] = $fullname;
+            $response['session'] = $session;
 
             echo json_encode($response);
         } catch (PDOException $exc) {
-            if ($exc->getCode() == 2300) {
-                $error->display("this is email is already in use", MyError::$ERROR_DUPLICATE_EMAIL);
+            if ($exc->getCode() == 23000) {
+                $error->display("این ایمیل قبلا ایجاد شده است", MyError::$ERROR_DUPLICATE_EMAIL);
             }
-            $error->display("System Error .", MyError::$ERROR_MYPDO_SQL);
+            $error->display("System Error 1", MyError::$ERROR_MYPDO_SQL);
         }
 
     }
 
-    public function checkLogin($id)
+    public function checkLogin($id, $session)
     {
 
         $errorManager = new MyError();
         $conn = MyPDO::getInstance();
-        $query = "SELECT id FROM users WHERE id = :id";
+        $query = "SELECT id FROM users WHERE id = :id AND session = :session";
         $stmt = $conn->prepare($query);
         $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+        $stmt->bindParam(":session", $session);
 
         try {
 
@@ -134,7 +148,7 @@ class users
 
         }
 
-        $errorManager->display("Wrong Login Data", MyError::$ERROR_WRONG_LOGIN_DATA);
+        $errorManager->display("Wrong Login Data 1", MyError::$ERROR_WRONG_LOGIN_DATA);
 
     }
 
