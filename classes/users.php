@@ -42,8 +42,7 @@ class users
     {
 
         $conn = MyPDO::getInstance();
-        $query = "SELECT 
-                     id , email , phone , fullname FROM users WHERE phone = :phone";
+        $query = "SELECT  id , email , phone , fullname FROM users WHERE phone = :phone";
 
         $stmt = $conn->prepare($query);
         //$stmt->bindParam(":email", $email);
